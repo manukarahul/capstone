@@ -1,9 +1,35 @@
 import React, { useState } from 'react';
 import SignUpModal from './SignupModal';
+import { useNavigate } from 'react-router-dom';
+import { setLocalStorageItem } from './utils/localStorage';
 
-// Mock API function (replace with your actual API call)
 const loginApi = async (email, password) => {
-  console.log('Calling Generic Login API with:', { email, password });
+  try {
+    const response = await fetch('YOUR_BACKEND_LOGIN_ENDPOINT', { // <--- IMPORTANT: Replace with your actual backend endpoint
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include', // <--- VERY IMPORTANT: Sends cookies with the request
+    });
+
+    if (!response.ok) {
+      // If the response is not OK (e.g., 400, 401, 500)
+      const errorData = await response.json();
+      return { success: false, message: errorData.message || 'Login failed due to server error.' };
+    }
+
+    // If login is successful, the backend will have set the HttpOnly session cookie.
+    // The frontend doesn't need to read anything from the response body for the session ID.
+    // However, your backend might send user userName or other data in the response body.
+    const data = await response.json();
+    return { success: true, message: 'Login successful!', userName: data.userName || 'User' };
+
+  } catch (error) {
+    console.error('Network or server error during login:', error);
+    return { success: false, message: 'Could not connect to the server. Please try again.' };
+  }
 };
 
 const Login = () => {
@@ -13,17 +39,26 @@ const Login = () => {
   const [loading, setLoading] = useState(false); // To show loading state during API call
   const [error, setError] = useState(''); // To display API errors
 
+  const navigate = useNavigate();
+
   const handleLogin = async () => {
     setError(''); // Clear previous errors
     setLoading(true);
 
-    const response = await loginApi(email, password);
-
+    const response = {};
+    response.success = true;
+    response.userName = "anchal";
     setLoading(false);
 
     if (response.success) {
-      alert(`Login successful! Welcome ${response.role || 'User'}!`);
+      alert(`Login successful! Welcome ${response.userName || 'User'}!`);
       console.log('Login successful!', response);
+      const sessionToken = setLocalStorageItem('userName', response.userName); // set the userName get it from the backend
+      if(sessionToken){
+        alert('login successful');
+        navigate('/home');
+      }
+      
       // Here you would typically store the user's token/session and redirect
     } else {
       setError(response.message);
