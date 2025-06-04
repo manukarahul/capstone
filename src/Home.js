@@ -1,9 +1,21 @@
+
+import React, { useState, useEffect } from 'react';
+import { mockLocationData, mockPropertyTypes, mockRoomListings } from './mockData';
+import SignUpModal from './SignupModal'; 
+import RoomCard from './RoomCard'; 
+import { removeLocalStorageItem } from './utils/localStorage';
+
+import { useNavigate } from 'react-router-dom';
+const HomePage = () => {
+  const [userName, setUserName] = useState('');
+
 import React, { useState, useEffect,useRef } from 'react';
 import { mockLocationData, mockPropertyTypes, mockRoomListings} from './mockData'; 
 import RoomCard from './RoomCard';
 import SettingsPanel from './SettingsPanel';
 
 const HomePage = ({setPropertyData,setShowHome}) => {
+
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
 
@@ -34,6 +46,8 @@ const HomePage = ({setPropertyData,setShowHome}) => {
   // State to hold filtered listings (initially all listings)
   const [filteredListings, setFilteredListings] = useState(mockRoomListings);
 
+  const navigate = useNavigate();
+  
   // Reset state/city when country/state changes
   useEffect(() => {
     setSelectedState('');
@@ -61,7 +75,12 @@ const HomePage = ({setPropertyData,setShowHome}) => {
 
   const handleLogoutClick = () => {
     alert('Logout clicked!');
+    removeLocalStorageItem('userName')
+    setUserName(''); // Clear the userName from component state immediately
     setIsProfileDropdownOpen(false);
+
+    // Redirect to the login page after logout
+    navigate('/');
   };
 
   const handleApplyFilters = () => {
