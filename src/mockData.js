@@ -50,3 +50,46 @@ export const mockLocationData = {
       area: isEven ? 1000 : 750,
     };
   });
+
+  // src/mockData.js
+
+// ... (existing mockLocationData, mockPropertyTypes, mockRoomListings) ...
+
+// Mock Notification Data
+export const mockNotifications = [
+  {
+    id: 'notif-1',
+    message: 'Your application for "Spacious Room 2" has been approved!',
+    type: 'success', // success, info, warning, error
+    timestamp: '2025-06-02T10:30:00Z',
+    read: false,
+  },
+  {
+    id: 'notif-2',
+    message: 'New message from owner of "Cozy Room 1".',
+    type: 'info',
+    timestamp: '2025-06-01T14:45:00Z',
+    read: false,
+  },
+  {
+    id: 'notif-3',
+    message: 'Payment for "Luxury Condo" is due in 3 days.',
+    type: 'warning',
+    timestamp: '2025-05-30T09:00:00Z',
+    read: true,
+  },
+  {
+    id: 'notif-4',
+    message: 'Special offer: 10% off on properties in Bangalore!',
+    type: 'info',
+    timestamp: '2025-05-28T18:00:00Z',
+    read: true,
+  },
+  {
+    id: 'notif-5',
+    message: 'Your profile has been updated successfully.',
+    type: 'success',
+    timestamp: '2025-05-25T11:20:00Z',
+    read: true,
+  },
+];

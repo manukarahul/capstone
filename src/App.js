@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider, Outlet, useNavigate } from 'react-
 import './App.css';
 import HomePage from './Home';
 import Login from './Login';
+
 // Removed: import RoomCard from './RoomCard'; (not used directly in App.js)
 // Removed: import userEvent from '@testing-library/user-event'; (testing utility, not for app logic)
 
@@ -43,10 +44,17 @@ const ProtectedRoute = () => {
 // --- End ProtectedRoute Component ---
 
 
+import RoomCard from './RoomCard';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import HomeListingDetail from './HomeListingsDetail';
+import WebHome from './components/Home';
+
+
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
+
       element: <Login/>,
       // Optional: If user is already logged in, redirect from login page
       loader: () => {
@@ -70,6 +78,18 @@ function App() {
       ]
     }
   ]);
+
+
+      element: <Login/>
+    },
+    {
+      path: "/home",
+      element: <WebHome/>
+    },
+    {path:"/itemdetails",
+      element:<HomeListingDetail/>
+    }
+  ])
 
   return (
     <div className="App">
