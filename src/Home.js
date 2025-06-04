@@ -1,12 +1,22 @@
-import React, { useState, useEffect } from 'react';
-// Import mock data from the separate file
-import { mockLocationData, mockPropertyTypes, mockRoomListings } from './mockData';
-// Assuming SignUpModal is in the same directory or adjust path
-import SignUpModal from './SignupModal'; 
-import RoomCard from './RoomCard'; // Import the RoomCard component
+import React, { useState, useEffect,useRef } from 'react';
+import { mockLocationData, mockPropertyTypes, mockRoomListings} from './mockData'; 
+import RoomCard from './RoomCard';
+import SettingsPanel from './SettingsPanel';
 
-const HomePage = () => {
+const HomePage = ({setPropertyData,setShowHome}) => {
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
+
+  const listingsRef = useRef(null)
+  // Dummy user data for settings panel (in a real app, this would come from a user context or API)
+  const [currentUserData, setCurrentUserData] = useState({
+    fullName: 'John Doe',
+    mobileNumber: '+91 9876543210',
+    email: 'john.doe@example.com',
+    address: '123 Main Street, Koramangala, Bengaluru, Karnataka, India',
+  });
+
+ 
 
   // Filter States
   const [selectedCountry, setSelectedCountry] = useState('');
@@ -15,7 +25,7 @@ const HomePage = () => {
   const [propertyType, setPropertyType] = useState('Any');
   const [minPrice, setMinPrice] = useState('');
   const [maxPrice, setMaxPrice] = useState('');
-  const [bedrooms, setBedrooms] = useState(''); // Could be 'Any', '1', '2+', etc.
+  const [bedrooms, setBedrooms] = useState('');
 
   // Derived states for dropdown options
   const states = selectedCountry ? Object.keys(mockLocationData[selectedCountry]) : [];
@@ -38,12 +48,9 @@ const HomePage = () => {
     setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
-  const handleNotificationClick = () => {
-    alert('Notifications clicked!');
-  };
 
   const handleSettingsClick = () => {
-    alert('Settings clicked!');
+    setIsSettingsPanelOpen(true);
     setIsProfileDropdownOpen(false);
   };
 
@@ -68,37 +75,24 @@ const HomePage = () => {
       bedrooms,
     });
     
-    // Simple client-side filtering example
     const newFilteredListings = mockRoomListings.filter(listing => {
       let matches = true;
-
-      // Location filters (simplified for mock data)
-      // Note: This simple includes check might not be robust for real data,
-      // you'd likely want exact matches or more complex location logic.
-      if (selectedCountry && !listing.location.includes(selectedCountry)) matches = false;
-      if (selectedState && !listing.location.includes(selectedState)) matches = false;
-      if (selectedCity && !listing.location.includes(selectedCity)) matches = false;
-
-      // Property Type filter (crude check based on title for mock data)
-      if (propertyType !== 'Any' && !listing.title.toLowerCase().includes(propertyType.toLowerCase())) matches = false;
-
-      // Price filters (assuming price is a string like "$1,800" or "₹35,000")
-      const numericPrice = parseFloat(listing.price.replace(/[^\d.]/g, '')); // Extract number
-      if (minPrice && numericPrice < parseFloat(minPrice)) matches = false;
-      if (maxPrice && numericPrice > parseFloat(maxPrice)) matches = false;
-
-      // Bedrooms filter
-      if (bedrooms) {
-        if (bedrooms === '4+' && listing.bedrooms < 4) matches = false;
-        else if (bedrooms !== '4+' && listing.bedrooms !== parseInt(bedrooms)) matches = false;
-      }
-      
       return matches;
     });
 
     setFilteredListings(newFilteredListings);
-    alert('Filters applied! See updated listings below.');
+
+  // Scroll to the listings section after applying filters
+  if (listingsRef.current) {
+    listingsRef.current.scrollIntoView({ behavior: 'smooth' });
+  }
+  alert('Filters applied! See updated listings below.');
   };
+
+ 
+
+ 
+
 
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
@@ -112,11 +106,7 @@ const HomePage = () => {
             <li><a href="#" className="text-gray-700 hover:text-purple-600 font-medium">Home</a></li>
             <li><a href="#" className="text-gray-700 hover:text-purple-600 font-medium">Services</a></li>
           </ul>
-          <button onClick={handleNotificationClick} className="text-gray-700 hover:text-purple-600 relative" aria-label="Notifications">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-            </svg>
-          </button>
+         
           <div className="relative">
             <button onClick={toggleProfileDropdown} className="flex items-center space-x-2 focus:outline-none" aria-expanded={isProfileDropdownOpen} aria-haspopup="true">
               <img src="https://placehold.co/40x40/CFCBFC/5046E5?text=JD" alt="Profile" className="w-10 h-10 rounded-full border-2 border-purple-400 object-cover"/>
@@ -197,14 +187,17 @@ const HomePage = () => {
 
       {/* Main Content Area - Display Room Cards */}
       <main className="p-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">Explore Listings</h2>
+        {/* <h2 className="text-3xl font-bold text-gray-800 mb-6">Explore Listings</h2> */}
+        <h2 ref={listingsRef} className="text-3xl font-bold text-gray-800 mb-6">Explore Listings</h2>
+
         
         {filteredListings.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {/* The loop is here, iterating over filteredListings */}
             {filteredListings.map((room) => (
               <RoomCard
-                key={room.id} // Essential for React list rendering
+              setShowHome = {setShowHome}
+                setPropertyData = {setPropertyData}
+                key={room.id}
                 imageUrl={room.imageUrl}
                 title={room.title}
                 location={room.location}
@@ -219,6 +212,15 @@ const HomePage = () => {
           <p className="text-gray-600 text-center text-xl mt-10">No listings found matching your criteria. Try adjusting your filters!</p>
         )}
       </main>
+
+      {/* Settings Side Panel */}
+      <SettingsPanel
+        isOpen={isSettingsPanelOpen}
+        onClose={() => setIsSettingsPanelOpen(false)}
+        initialData={currentUserData}
+      />
+
+    
     </div>
   );
 };

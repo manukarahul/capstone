@@ -1,10 +1,14 @@
 // src/components/RoomCard.jsx
 import React from 'react';
-
-const RoomCard = ({ imageUrl, title, location, price, bedrooms, bathrooms, area }) => {
+import { useNavigate} from 'react-router-dom';
+const RoomCard = ({ setShowHome,setPropertyData,imageUrl, title, location, price, bedrooms, bathrooms, area }) => {
   // Uses the imageUrl prop directly. If it's undefined/null, it defaults to the first fallback.
   const finalImageUrl = imageUrl || "https://dummyimage.com/600x400/DCCFEF/7C3AED&text=Room+Image+Default";
-
+  const navigate = useNavigate();
+  const handleClick = () => {
+      setShowHome(false);
+      setPropertyData(imageUrl, title, location, price, bedrooms, bathrooms, area );
+  };
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
       {/* Room Photo */}
@@ -56,7 +60,7 @@ const RoomCard = ({ imageUrl, title, location, price, bedrooms, bathrooms, area 
           </div>
         </div>
 
-        <button className="mt-4 w-full bg-purple-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-purple-700 transition duration-200">
+        <button className="mt-4 w-full bg-purple-600 text-white py-2 px-4 rounded-md text-sm font-semibold hover:bg-purple-700 transition duration-200" onClick={handleClick}>
           View Details
         </button>
       </div>
