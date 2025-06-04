@@ -1,4 +1,3 @@
-// app.js
 import React, { useState, useEffect } from 'react'; // <-- Import React hooks
 import { createBrowserRouter, RouterProvider, Outlet, useNavigate } from 'react-router-dom'; // <-- Add Outlet and useNavigate
 import './App.css';
