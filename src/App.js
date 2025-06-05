@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react'; // <-- Import React hooks
-import { createBrowserRouter, RouterProvider, Outlet, useNavigate } from 'react-router-dom'; // <-- Add Outlet and useNavigate
+import { createBrowserRouter,redirect, RouterProvider, Outlet, useNavigate } from 'react-router-dom'; // <-- Add Outlet and useNavigate
 import './App.css';
 import HomePage from './Home';
 import Login from './Login';
+import RoomCard from './RoomCard';
+import HomeListingDetail from './HomeListingsDetail';
+import WebHome from './components/Home';
 
 // Removed: import RoomCard from './RoomCard'; (not used directly in App.js)
 // Removed: import userEvent from '@testing-library/user-event'; (testing utility, not for app logic)
@@ -44,58 +47,48 @@ const ProtectedRoute = () => {
 // --- End ProtectedRoute Component ---
 
 
-import RoomCard from './RoomCard';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import HomeListingDetail from './HomeListingsDetail';
-import WebHome from './components/Home';
-
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-
-      element: <Login/>,
-      // Optional: If user is already logged in, redirect from login page
+      element: <Login />,
       loader: () => {
         if (getLocalStorageItem('userName')) {
-          // You could use `throw redirect("/home")` here if you prefer React Router's loader redirects
-          // but for direct App.js control, we'll let ProtectedRoute handle it on /home
-          // or navigate programmatically within Login.js after a successful attempt.
-          // For now, let Login render, and Login.js handles navigation post-auth.
+          return redirect("/home");
         }
         return null;
       }
     },
     {
       path: "/home",
-      element: <ProtectedRoute />, // Wrap HomePage with ProtectedRoute
+      element: <ProtectedRoute />, // 🔒 Protected route
       children: [
         {
-          index: true, // This makes HomePage the default child for /home
-          element: <HomePage />
+          index: true,
+          element: <WebHome />
+        }
+      ]
+    },
+    {
+      path: "/itemdetails",
+      element: <ProtectedRoute />, // 🔒 Protected route
+      children: [
+        {
+          index: true,
+          element: <HomeListingDetail />
+
         }
       ]
     }
   ]);
 
-
-      element: <Login/>
-    },
-    {
-      path: "/home",
-      element: <WebHome/>
-    },
-    {path:"/itemdetails",
-      element:<HomeListingDetail/>
-    }
-  ])
-
   return (
     <div className="App">
-      <RouterProvider router={router}/>
+      <RouterProvider router={router} />
     </div>
   );
 }
+
 
 export default App;
