@@ -68,6 +68,7 @@ const AddPropertyModal = ({ isOpen, onClose, onAddPropertySubmit}) => {
       onAddPropertySubmit(newProperty);
     }
 
+    
     onClose(); // Close the modal after submission
 
     // Reset all form fields
