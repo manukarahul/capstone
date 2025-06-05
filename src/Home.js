@@ -1,24 +1,21 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useRef } from 'react';
 import { mockLocationData, mockPropertyTypes, mockRoomListings } from './mockData';
 import SignUpModal from './SignupModal'; 
 import RoomCard from './RoomCard'; 
+import SettingsPanel from './SettingsPanel';
 import { removeLocalStorageItem } from './utils/localStorage';
 
 import { useNavigate } from 'react-router-dom';
-const HomePage = () => {
+import AddPropertyModal from './AddPropertyModal.js';
+ 
+  
+  const HomePage = ({setPropertyData,setShowHome}) => {
+    
   const [userName, setUserName] = useState('');
-
-import React, { useState, useEffect,useRef } from 'react';
-import { mockLocationData, mockPropertyTypes, mockRoomListings} from './mockData'; 
-import RoomCard from './RoomCard';
-import SettingsPanel from './SettingsPanel';
-
-const HomePage = ({setPropertyData,setShowHome}) => {
-
   const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
-
+  const [isAddPropertyModalOpen,setIsAddPropertyModalOpen] = useState(false)
   const listingsRef = useRef(null)
   // Dummy user data for settings panel (in a real app, this would come from a user context or API)
   const [currentUserData, setCurrentUserData] = useState({
@@ -101,6 +98,8 @@ const HomePage = ({setPropertyData,setShowHome}) => {
 
     setFilteredListings(newFilteredListings);
 
+
+
   // Scroll to the listings section after applying filters
   if (listingsRef.current) {
     listingsRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -108,53 +107,67 @@ const HomePage = ({setPropertyData,setShowHome}) => {
   alert('Filters applied! See updated listings below.');
   };
 
- 
-
- 
-
-
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
-      {/* Navbar */}
-      <nav className="bg-white shadow-md p-4 flex justify-between items-center relative z-10">
-        <div className="flex items-center">
-          <a href="/" className="text-2xl font-bold text-purple-600">GoogleRent</a>
+    {/* Navbar - Stays at the top */}
+    <nav className="bg-white shadow-md p-4 flex justify-between items-center relative z-10">
+      <div className="flex items-center">
+        <a href="/" className="text-2xl font-bold text-purple-600">GoogleRent</a>
+      </div>
+      <div className="flex items-center space-x-6">
+        <div className="relative">
+          <button onClick={toggleProfileDropdown} className="flex items-center space-x-2 focus:outline-none" aria-expanded={isProfileDropdownOpen} aria-haspopup="true">
+            <img src="https://placehold.co/40x40/CFCBFC/5046E5?text=JD" alt="Profile" className="w-10 h-10 rounded-full border-2 border-purple-400 object-cover"/>
+            <span className="text-gray-800 font-medium hidden md:block">John Doe</span>
+            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          {isProfileDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none">
+              <a href="#" onClick={handleSettingsClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
+              <a href="#" onClick={handleHistoryClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">History</a>
+              <a href="#" onClick={handleLogoutClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
+            </div>
+          )}
         </div>
-        <div className="flex items-center space-x-6">
-          <ul className="flex space-x-6">
-            <li><a href="#" className="text-gray-700 hover:text-purple-600 font-medium">Home</a></li>
-            <li><a href="#" className="text-gray-700 hover:text-purple-600 font-medium">Services</a></li>
-          </ul>
-         
-          <div className="relative">
-            <button onClick={toggleProfileDropdown} className="flex items-center space-x-2 focus:outline-none" aria-expanded={isProfileDropdownOpen} aria-haspopup="true">
-              <img src="https://placehold.co/40x40/CFCBFC/5046E5?text=JD" alt="Profile" className="w-10 h-10 rounded-full border-2 border-purple-400 object-cover"/>
-              <span className="text-gray-800 font-medium hidden md:block">John Doe</span>
-              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-              </svg>
-            </button>
-            {isProfileDropdownOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none">
-                <a href="#" onClick={handleSettingsClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-                <a href="#" onClick={handleHistoryClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">History</a>
-                <a href="#" onClick={handleLogoutClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
-              </div>
-            )}
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section with Filters */}
-      <header className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-8 md:p-12 text-center shadow-lg">
-        <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Find Your Perfect Rental</h1>
-        <p className="text-xl md:text-2xl mb-8">Discover properties tailored to your needs.</p>
-
-        <div className="bg-white p-6 rounded-xl shadow-lg max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      </div>
+    </nav>
+      
+    <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-8 md:p-12 text-center shadow-lg">
+      <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Find Your Perfect Rental</h1>
+      <p className="text-xl md:text-2xl mb-8">Discover properties tailored to your needs.</p>
+    </div>
+    {/* --- */}
+    {/* New Split Section: Add Property (Left) and Filters (Right) */}
+    <div className="p-8 flex flex-col md:flex-row gap-8">
+      {/* Left Half: Add Property Button with Logo */}
+      <div className="md:w-1/3 flex flex-col items-center justify-center p-6 bg-white rounded-xl shadow-lg">
+        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Want to list your property?</h3>
+        <button 
+          onClick={() => setIsAddPropertyModalOpen(true)} // You'd typically link this to opening your modal
+          className="bg-purple-600 text-white px-6 py-3 rounded-md font-semibold hover:bg-purple-700 transition duration-200 ease-in-out shadow-md flex items-center justify-center space-x-2 w-full max-w-xs"
+          >
+          {/* Small Plus Logo/Icon */}
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          <span>Add Property</span>
+        </button>
+        <p className="text-gray-600 text-sm mt-4 text-center">
+          List your rental property quickly and easily to connect with potential tenants.
+        </p>
+      </div>
+  
+      {/* Right Half: Filter Section */}
+      <div className="md:w-2/3 bg-white p-6 rounded-xl shadow-lg">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Filter Listings</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <div>
             <label htmlFor="country" className="block text-gray-700 text-sm font-semibold mb-2 text-left">Country</label>
             <select id="country" className="w-full p-3 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-800" value={selectedCountry} onChange={(e) => setSelectedCountry(e.target.value)}>
               <option value="">Select Country</option>
+              {/* Ensure mockLocationData is defined and accessible */}
               {Object.keys(mockLocationData).map((country) => (<option key={country} value={country}>{country}</option>))}
             </select>
           </div>
@@ -162,6 +175,7 @@ const HomePage = ({setPropertyData,setShowHome}) => {
             <label htmlFor="state" className="block text-gray-700 text-sm font-semibold mb-2 text-left">State</label>
             <select id="state" className="w-full p-3 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-800" value={selectedState} onChange={(e) => setSelectedState(e.target.value)} disabled={!selectedCountry}>
               <option value="">Select State</option>
+              {/* Ensure states is derived from selectedCountry */}
               {states.map((state) => (<option key={state} value={state}>{state}</option>))}
             </select>
           </div>
@@ -169,12 +183,14 @@ const HomePage = ({setPropertyData,setShowHome}) => {
             <label htmlFor="city" className="block text-gray-700 text-sm font-semibold mb-2 text-left">City</label>
             <select id="city" className="w-full p-3 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-800" value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} disabled={!selectedState}>
               <option value="">Select City</option>
+              {/* Ensure cities is derived from selectedState */}
               {cities.map((city) => (<option key={city} value={city}>{city}</option>))}
             </select>
           </div>
           <div>
             <label htmlFor="propertyType" className="block text-gray-700 text-sm font-semibold mb-2 text-left">Property Type</label>
             <select id="propertyType" className="w-full p-3 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500 text-gray-800" value={propertyType} onChange={(e) => setPropertyType(e.target.value)}>
+              {/* Ensure mockPropertyTypes is defined */}
               {mockPropertyTypes.map((type) => (<option key={type} value={type}>{type}</option>))}
             </select>
           </div>
@@ -202,46 +218,38 @@ const HomePage = ({setPropertyData,setShowHome}) => {
             </button>
           </div>
         </div>
-      </header>
-
-      {/* Main Content Area - Display Room Cards */}
-      <main className="p-8">
-        {/* <h2 className="text-3xl font-bold text-gray-800 mb-6">Explore Listings</h2> */}
-        <h2 ref={listingsRef} className="text-3xl font-bold text-gray-800 mb-6">Explore Listings</h2>
-
-        
-        {filteredListings.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredListings.map((room) => (
-              <RoomCard
-              setShowHome = {setShowHome}
-                setPropertyData = {setPropertyData}
-                key={room.id}
-                imageUrl={room.imageUrl}
-                title={room.title}
-                location={room.location}
-                price={room.price}
-                bedrooms={room.bedrooms}
-                bathrooms={room.bathrooms}
-                area={room.area}
-              />
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-600 text-center text-xl mt-10">No listings found matching your criteria. Try adjusting your filters!</p>
-        )}
-      </main>
-
-      {/* Settings Side Panel */}
-      <SettingsPanel
-        isOpen={isSettingsPanelOpen}
-        onClose={() => setIsSettingsPanelOpen(false)}
-        initialData={currentUserData}
-      />
-
-    
+      </div>
     </div>
+  
+    {/* --- */}
+    {/* Main Content Area - Display Room Cards */}
+    <main className="p-8">
+      <h2 ref={listingsRef} className="text-3xl font-bold text-gray-800 mb-6">Explore Listings</h2>
+      {filteredListings.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredListings.map((room) => (
+            <RoomCard
+            setShowHome={setShowHome}
+            setPropertyData={setPropertyData}
+            room={room} 
+            key={room.id}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="text-gray-600 text-center text-xl mt-10">No listings found matching your criteria. Try adjusting your filters!</p>
+      )}
+    </main>
+  
+    {/* Settings Side Panel */}
+    <SettingsPanel
+    isOpen={isSettingsPanelOpen}
+    onClose={() => setIsSettingsPanelOpen(false)}
+    initialData={currentUserData}
+    />
+  <AddPropertyModal isOpen={isAddPropertyModalOpen} onClose={setIsAddPropertyModalOpen}/>
+  </div>
   );
-};
+}
 
-export default HomePage;
+export default HomePage
