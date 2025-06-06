@@ -47,7 +47,7 @@ const Login = () => {
 
     const response = {};
     response.success = true;
-    response.userName = "anchal";
+    response.userName = "anchal"
     setLoading(false);
 
     if (response.success) {

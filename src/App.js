@@ -1,99 +1,75 @@
-import React, { useState, useEffect } from 'react'; // <-- Import React hooks
-import { createBrowserRouter, RouterProvider, Outlet, useNavigate } from 'react-router-dom'; // <-- Add Outlet and useNavigate
+import React, { useState, useEffect } from 'react';
+import { createBrowserRouter, RouterProvider, Outlet, useNavigate, redirect } from 'react-router-dom'; // Add redirect
 import './App.css';
 import HomePage from './Home';
-import Login from './Login';
+import Login from './Login'; // Make sure Login.js handles its own redirection
+import HomeListingDetail from './HomeListingsDetail';
+// Removed: import WebHome from './components/Home'; // Assuming HomePage is the primary authenticated home
 
-// Removed: import RoomCard from './RoomCard'; (not used directly in App.js)
-// Removed: import userEvent from '@testing-library/user-event'; (testing utility, not for app logic)
-
-// Import local storage utilities (ensure these are in src/utils/localStorage.js)
 import { getLocalStorageItem } from './utils/localStorage';
 
-// --- ProtectedRoute Component (defined within app.js for now) ---
+// --- ProtectedRoute Component ---
 const ProtectedRoute = () => {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true); // To prevent flashing content
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check local storage for userName
     const userName = getLocalStorageItem('userName');
     if (userName) {
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
-      // If not authenticated, redirect to login.
-      // Use a small timeout to ensure navigate runs after render cycle.
-      setTimeout(() => {
-        navigate('/');
-      }, 0);
+      navigate('/'); // Redirect to login if not authenticated
     }
-    setIsLoading(false); // Authentication check is complete
-  }, [navigate]); // Re-run if navigate function changes (unlikely for this basic setup)
+    setIsLoading(false);
+  }, [navigate]);
 
   if (isLoading) {
-    // Optionally render a loading spinner or null while checking auth status
     return <div className="flex justify-center items-center h-screen">Loading...</div>;
   }
 
-  // If authenticated, render the child routes (HomePage in this case)
-  // If not authenticated, the useEffect has already navigated away.
   return isAuthenticated ? <Outlet /> : null;
 };
 // --- End ProtectedRoute Component ---
-
-
-import RoomCard from './RoomCard';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import HomeListingDetail from './HomeListingsDetail';
-import WebHome from './components/Home';
-
 
 function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-
-      element: <Login/>,
-      // Optional: If user is already logged in, redirect from login page
-      loader: () => {
-        if (getLocalStorageItem('userName')) {
-          // You could use `throw redirect("/home")` here if you prefer React Router's loader redirects
-          // but for direct App.js control, we'll let ProtectedRoute handle it on /home
-          // or navigate programmatically within Login.js after a successful attempt.
-          // For now, let Login render, and Login.js handles navigation post-auth.
-        }
-        return null;
-      }
+      element: <Login />, // Login component will handle redirection if user exists
     },
     {
       path: "/home",
       element: <ProtectedRoute />, // Wrap HomePage with ProtectedRoute
       children: [
         {
-          index: true, // This makes HomePage the default child for /home
+          index: true,
           element: <HomePage />
         }
       ]
+    },
+    // If WebHome is a different home page, give it a distinct path.
+    // For example:
+    // {
+    //   path: "/web-home",
+    //   element: <ProtectedRoute />,
+    //   children: [
+    //     {
+    //       index: true,
+    //       element: <WebHome />
+    //     }
+    //   ]
+    // },
+    {
+      path: "/itemdetails",
+      element: <HomeListingDetail />
     }
   ]);
 
-
-      element: <Login/>
-    },
-    {
-      path: "/home",
-      element: <WebHome/>
-    },
-    {path:"/itemdetails",
-      element:<HomeListingDetail/>
-    }
-  ])
-
   return (
     <div className="App">
-      <RouterProvider router={router}/>
+      <RouterProvider router={router} />
     </div>
   );
 }

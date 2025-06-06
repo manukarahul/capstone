@@ -16,12 +16,7 @@ export function setLocalStorageItem(key, value) {
         localStorage.setItem(key, JSON.stringify(value));
         return true;
     } catch (e) {
-        if (e.name === 'QuotaExceededError') {
-            console.warn(`Local storage quota exceeded for key "${key}".`);
-            // You might want to display a user-friendly message here
-        } else {
-            console.error(`Error setting local storage item "${key}":`, e);
-        }
+        console.error(`Error setting local storage item "${key}":`, e);
         return false;
     }
 }
