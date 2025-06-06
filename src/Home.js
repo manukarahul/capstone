@@ -1,29 +1,19 @@
 
 import React, { useState, useEffect,useRef } from 'react';
 import { mockLocationData, mockPropertyTypes, mockRoomListings } from './mockData';
-import SignUpModal from './SignupModal'; 
 import RoomCard from './RoomCard'; 
 import SettingsPanel from './SettingsPanel';
-import { removeLocalStorageItem } from './utils/localStorage';
-
-import { useNavigate } from 'react-router-dom';
 import AddPropertyModal from './AddPropertyModal.js';
+import Navbar from './Navbar.js';
  
   
   const HomePage = ({setPropertyData,setShowHome}) => {
     
-  const [userName, setUserName] = useState('');
-  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
   const [isSettingsPanelOpen, setIsSettingsPanelOpen] = useState(false);
   const [isAddPropertyModalOpen,setIsAddPropertyModalOpen] = useState(false)
   const listingsRef = useRef(null)
   // Dummy user data for settings panel (in a real app, this would come from a user context or API)
-  const [currentUserData, setCurrentUserData] = useState({
-    fullName: 'John Doe',
-    mobileNumber: '+91 9876543210',
-    email: 'john.doe@example.com',
-    address: '123 Main Street, Koramangala, Bengaluru, Karnataka, India',
-  });
+  
 
  
 
@@ -43,7 +33,7 @@ import AddPropertyModal from './AddPropertyModal.js';
   // State to hold filtered listings (initially all listings)
   const [filteredListings, setFilteredListings] = useState(mockRoomListings);
 
-  const navigate = useNavigate();
+                                 
   
   // Reset state/city when country/state changes
   useEffect(() => {
@@ -55,30 +45,6 @@ import AddPropertyModal from './AddPropertyModal.js';
     setSelectedCity('');
   }, [selectedState]);
 
-  const toggleProfileDropdown = () => {
-    setIsProfileDropdownOpen(!isProfileDropdownOpen);
-  };
-
-
-  const handleSettingsClick = () => {
-    setIsSettingsPanelOpen(true);
-    setIsProfileDropdownOpen(false);
-  };
-
-  const handleHistoryClick = () => {
-    alert('History clicked!');
-    setIsProfileDropdownOpen(false);
-  };
-
-  const handleLogoutClick = () => {
-    alert('Logout clicked!');
-    removeLocalStorageItem('userName')
-    setUserName(''); // Clear the userName from component state immediately
-    setIsProfileDropdownOpen(false);
-
-    // Redirect to the login page after logout
-    navigate('/');
-  };
 
   const handleApplyFilters = () => {
     console.log('Applying Filters:', {
@@ -110,30 +76,7 @@ import AddPropertyModal from './AddPropertyModal.js';
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
     {/* Navbar - Stays at the top */}
-    <nav className="bg-white shadow-md p-4 flex justify-between items-center relative z-10">
-      <div className="flex items-center">
-        <a href="/" className="text-2xl font-bold text-purple-600">GoogleRent</a>
-      </div>
-      <div className="flex items-center space-x-6">
-        <div className="relative">
-          <button onClick={toggleProfileDropdown} className="flex items-center space-x-2 focus:outline-none" aria-expanded={isProfileDropdownOpen} aria-haspopup="true">
-            <img src="https://placehold.co/40x40/CFCBFC/5046E5?text=JD" alt="Profile" className="w-10 h-10 rounded-full border-2 border-purple-400 object-cover"/>
-            <span className="text-gray-800 font-medium hidden md:block">John Doe</span>
-            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-          {isProfileDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 ring-1 ring-black ring-opacity-5 focus:outline-none">
-              <a href="#" onClick={handleSettingsClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Settings</a>
-              <a href="#" onClick={handleHistoryClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">History</a>
-              <a href="#" onClick={handleLogoutClick} className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</a>
-            </div>
-          )}
-        </div>
-      </div>
-    </nav>
-      
+    <Navbar/>
     <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-8 md:p-12 text-center shadow-lg">
       <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Find Your Perfect Rental</h1>
       <p className="text-xl md:text-2xl mb-8">Discover properties tailored to your needs.</p>
@@ -241,12 +184,6 @@ import AddPropertyModal from './AddPropertyModal.js';
       )}
     </main>
   
-    {/* Settings Side Panel */}
-    <SettingsPanel
-    isOpen={isSettingsPanelOpen}
-    onClose={() => setIsSettingsPanelOpen(false)}
-    initialData={currentUserData}
-    />
   <AddPropertyModal isOpen={isAddPropertyModalOpen} onClose={setIsAddPropertyModalOpen}/>
   </div>
   );
