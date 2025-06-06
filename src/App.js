@@ -12,6 +12,7 @@ import WebHome from './components/Home';
 
 // Import local storage utilities (ensure these are in src/utils/localStorage.js)
 import { getLocalStorageItem } from './utils/localStorage';
+import PropertyCardList from './PropertyCardList';
 
 // --- ProtectedRoute Component (defined within app.js for now) ---
 const ProtectedRoute = () => {
@@ -78,6 +79,16 @@ function App() {
           index: true,
           element: <HomeListingDetail />
 
+        }
+      ]
+    },
+    {
+      path:"/showproperty",
+      element:<ProtectedRoute/>,
+      children:[
+        {
+          index:true,
+          element:<PropertyCardList/>
         }
       ]
     }
