@@ -93,11 +93,12 @@ const Navbar = () => {
 
       <div className="flex items-center space-x-6">
 
-        {/* <Link to="/home" className="hover:text-blue-200 font-medium hidden sm:block">Home</Link> */}
+        <Link to="/home" className="hover:text-blue-200 font-medium hidden sm:block">Home</Link>
+        <Link to="/services" className="hover:text-blue-200 font-medium hidden sm:block">Services</Link>
 
-        <Link to="/showproperty" className="hover:text-blue-200 font-medium hidden sm:block">Properties</Link>
+        {/* <Link to="/showproperty" className="hover:text-blue-200 font-medium hidden sm:block">Properties</Link> */}
 
-        <Link to="/itemdetails" className="hover:text-blue-200 font-medium hidden sm:block">My Listings</Link>
+        {/* <Link to="/itemdetails" className="hover:text-blue-200 font-medium hidden sm:block">My Listings</Link> */}
 
 
         {/* About Us link using onClick */}
@@ -116,7 +117,7 @@ const Navbar = () => {
 
             </div>
 
-            <span className="text-white font-medium hidden md:block">John Doe</span>
+            <span className="text-black font-medium hidden md:block">John Doe</span>
 
             <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
 

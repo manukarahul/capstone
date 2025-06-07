@@ -16,6 +16,7 @@ import { getLocalStorageItem } from './utils/localStorage';
 import Navbar from './Navbar'; // Import Navbar
 import Footer from './components/Footer'; // Import Footer (create this file if it doesn't exist)
 import ScrollContext from './contexts/ScrollContext'; // Import your new context
+import Services from './components/Services';
 
 
 
@@ -155,6 +156,14 @@ function App() {
           path: "/showproperty",
 
           element: <PropertyCardList />
+
+        },
+
+        {
+
+          path: "/services",
+
+          element: <Services />
 
         }
 
