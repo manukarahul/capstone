@@ -76,7 +76,7 @@ import Navbar from './Navbar.js';
   return (
     <div className="min-h-screen bg-gray-100 font-sans">
     {/* Navbar - Stays at the top */}
-    <Navbar/>
+    {/* <Navbar/> */}
     <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white p-8 md:p-12 text-center shadow-lg">
       <h1 className="text-4xl md:text-5xl font-extrabold mb-4">Find Your Perfect Rental</h1>
       <p className="text-xl md:text-2xl mb-8">Discover properties tailored to your needs.</p>
