@@ -1,3 +1,4 @@
+// src/utils/localStorage.js
 
 export function getLocalStorageItem(key) {
     try {
@@ -5,8 +6,6 @@ export function getLocalStorageItem(key) {
         return item ? JSON.parse(item) : null;
     } catch (e) {
         console.error(`Error getting or parsing local storage item "${key}":`, e);
-        // Optionally, clear corrupted item if parsing fails to prevent future errors
-        // localStorage.removeItem(key);
         return null;
     }
 }
@@ -18,14 +17,12 @@ export function setLocalStorageItem(key, value) {
     } catch (e) {
         if (e.name === 'QuotaExceededError') {
             console.warn(`Local storage quota exceeded for key "${key}".`);
-            // You might want to display a user-friendly message here
         } else {
             console.error(`Error setting local storage item "${key}":`, e);
         }
         return false;
     }
 }
-
 
 export function removeLocalStorageItem(key) {
     try {
@@ -34,7 +31,6 @@ export function removeLocalStorageItem(key) {
         console.error(`Error removing local storage item "${key}":`, e);
     }
 }
-
 
 // export function clearAllLocalStorage() {
 //     try {

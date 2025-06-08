@@ -1,3 +1,4 @@
+// src/components/cards/PropertyCard.js
 import React from 'react';
 
 const PropertyCard = ({ property, onEdit, onDelete }) => {

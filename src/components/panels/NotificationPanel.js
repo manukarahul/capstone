@@ -1,4 +1,4 @@
-// src/components/NotificationPanel.jsx
+// src/components/panels/NotificationPanel.js
 import React, { useRef, useEffect } from 'react';
 
 const NotificationPanel = ({ isOpen, onClose, notifications, onMarkAsRead, onClearAll }) => {

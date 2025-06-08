@@ -1,45 +1,29 @@
-// src/components/HomeListingDetail.jsx
-import React, { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
+// src/pages/HomeListingDetailPage.js (Formerly HomeListingDetail.jsx)
+import React, { useState, useEffect } from 'react';
+import { mockRoomListings } from '../data/mockData'; // Import mock data
 
-const HomeListingDetail = ({setShowHome, propertyData }) => {
+const HomeListingDetailPage = ({ setShowHome, propertyData }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const listing = {
-    "title": "Modern 3-Bedroom Apartment in Downtown",
-    "location": "123 Main Street, Downtown City, NY 10001",
-    "price": 3500,
-    "bedrooms": 3,
-    "bathrooms": 2,
-    "area": 1200,
-    "description": "Spacious and sunlit apartment located in the heart of downtown. Features modern design, large windows, and a private balcony. Perfect for families or working professionals.",
-    "images": [
-      "https://plus.unsplash.com/premium_photo-1669083827853-de7a75b6daa9?q=80&w=2487&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      "https://images.unsplash.com/photo-1748024093647-bbbfbe2c0c3f?q=80&w=2497&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-    ],
-    "amenities": [
-      "Air Conditioning",
-      "Washer/Dryer",
-      "Elevator",
-      "Gym",
-      "Pet Friendly",
-      "24/7 Security",
-      "Parking Garage"
-    ],
-    "ownerDetails": {
-      "name": "Jane Doe",
-      "contactNumber": "+1-555-123-4567",
-      "email": "jane.doe@example.com"
-    },
-    "ownerPreferences": {
-      "preferredTenants": "Working professionals or families",
-      "minimumLeaseTermMonths": 12,
-      "petsAllowed": true,
-      "smokingAllowed": false
+  const [listing, setListing] = useState(null); // State to hold the actual listing data
+
+  useEffect(() => {
+    // If propertyData is passed (from RoomCard click), use it
+    if (propertyData && Object.keys(propertyData).length > 0) {
+      setListing(propertyData);
+    } else {
+      // Fallback: If navigating directly or propertyData is empty,
+      // you might fetch a default or specific listing here,
+      // or handle the case where no property data is available.
+      // For now, let's use the first mock listing as a fallback for demonstration.
+      if (mockRoomListings && mockRoomListings.length > 0) {
+        setListing(mockRoomListings[0]);
+      }
     }
-  }
-  
+  }, [propertyData]);
+
+
   if (!listing) {
-    return <div className="text-center p-8 text-gray-700">Listing not found.</div>;
+    return <div className="text-center p-8 text-gray-700">Loading listing details...</div>;
   }
 
   const {
@@ -73,8 +57,7 @@ const HomeListingDetail = ({setShowHome, propertyData }) => {
       prevIndex === images.length - 1 ? 0 : prevIndex + 1
     );
   };
-  // const navigate = useNavigate();
-  
+
   // Helper function for owner preferences display
   const renderPreference = (condition, text, icon) => {
     if (condition) {
@@ -89,24 +72,20 @@ const HomeListingDetail = ({setShowHome, propertyData }) => {
   };
 
   return (
-    
-    <div className="container mx-auto p-4 md:p-8 bg-white rounded-lg shadow-xl mt-4 max-w-4xl"> {/* Added max-w-4xl for better readability */}
-
+    <div className="container mx-auto p-4 md:p-8 bg-white rounded-lg shadow-xl mt-4 max-w-4xl">
       <button
-        
         className="mb-6 flex items-center text-purple-600 hover:text-purple-800 font-semibold transition-colors duration-200"
-        onClick={() => {setShowHome(true)}}
+        onClick={() => { setShowHome(true) }} // Go back to the main home page
       >
         <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
         </svg>
         Back to Listings
       </button>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Left Column: Image Gallery and Description */}
         <div className="flex flex-col">
-          <div className="relative w-full h-80 sm:h-96 bg-gray-200 rounded-lg overflow-hidden mb-4 shadow-md"> {/* Adjusted height for better fit */}
+          <div className="relative w-full h-80 sm:h-96 bg-gray-200 rounded-lg overflow-hidden mb-4 shadow-md">
             <img
               src={mainImageUrl}
               alt={title}
@@ -131,12 +110,12 @@ const HomeListingDetail = ({setShowHome, propertyData }) => {
             )}
           </div>
           {images.length > 1 && (
-            <div className="flex flex-wrap gap-2 justify-center mb-6"> {/* Added mb-6 to create space below thumbnails */}
+            <div className="flex flex-wrap gap-2 justify-center mb-6">
               {images.map((img, index) => (
                 <img
                   key={index}
                   src={img}
-                  alt={`${"no image"} thumbnail ${index + 1}`}
+                  alt={`${title} thumbnail ${index + 1}`}
                   className={`w-16 h-12 md:w-20 md:h-16 object-cover rounded-md cursor-pointer border-2 ${
                     index === currentImageIndex ? 'border-purple-600' : 'border-transparent'
                   } hover:border-purple-600 transition-all duration-200`}
@@ -147,12 +126,10 @@ const HomeListingDetail = ({setShowHome, propertyData }) => {
             </div>
           )}
 
-          {/* Description below images */}
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">Description</h2>
           <p className="text-gray-700 leading-relaxed mb-6">{description}</p>
         </div>
 
-        {/* Right Column: Room Details, Amenities, Preferences, Contact */}
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{title}</h1>
           <p className="text-xl text-purple-700 font-semibold mb-4">{price} <span className="text-gray-600 text-sm">/month</span></p>
@@ -201,11 +178,10 @@ const HomeListingDetail = ({setShowHome, propertyData }) => {
 
           <h2 className="text-2xl font-semibold text-gray-800 mb-2">Owner Preferences</h2>
           <div className="flex flex-wrap mb-6">
-            {renderPreference(ownerPreferences.gymFreak, 'Gym Freak', '🏋️‍♂️')}
+            {renderPreference(ownerPreferences.gymFreak, 'Gym Freak', '🏋️')}
             {renderPreference(ownerPreferences.petLover, 'Pet Lover', '🐾')}
-            {renderPreference(ownerPreferences.smokerFriendly, 'Smoker Friendly', '🚬')}
-            {/* Display veg/non-veg preference unconditionally as it's always one or the other */}
-            {renderPreference(true, ownerPreferences.vegNonVeg, ownerPreferences.vegNonVeg === 'Vegetarian' ? '🥕' : '🍗')}
+            {renderPreference(ownerPreferences.smokerFriendly, 'Smoker Friendly', '🚭')}
+            {renderPreference(true, ownerPreferences.vegNonVeg, ownerPreferences.vegNonVeg === 'Vegetarian' ? '🥗' : '🍗')}
           </div>
 
           <hr className="my-4"/>
@@ -245,4 +221,4 @@ const HomeListingDetail = ({setShowHome, propertyData }) => {
   );
 };
 
-export default HomeListingDetail;
+export default HomeListingDetailPage;

@@ -1,17 +1,14 @@
-// src/components/SettingsPanel.jsx
+// src/components/panels/SettingsPanel.js
 import React, { useState, useRef, useEffect } from 'react';
 
 const SettingsPanel = ({ isOpen, onClose, initialData }) => {
-  // State for form fields
   const [mobileNumber, setMobileNumber] = useState(initialData.mobileNumber || '');
   const [email, setEmail] = useState(initialData.email || '');
   const [address, setAddress] = useState(initialData.address || '');
   const [fullName, setFullName] = useState(initialData.fullName || '');
 
-  // Ref for the panel to handle clicks outside
   const panelRef = useRef(null);
 
-  // Update form fields when initialData changes (e.g., when panel opens with new user data)
   useEffect(() => {
     if (initialData) {
       setMobileNumber(initialData.mobileNumber || '');
@@ -21,7 +18,6 @@ const SettingsPanel = ({ isOpen, onClose, initialData }) => {
     }
   }, [initialData]);
 
-  // Handle clicks outside the panel to close it
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (panelRef.current && !panelRef.current.contains(event.target)) {
@@ -42,7 +38,6 @@ const SettingsPanel = ({ isOpen, onClose, initialData }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real application, you'd send this data to your backend API
     console.log('Saving settings:', {
       mobileNumber,
       email,
@@ -50,25 +45,22 @@ const SettingsPanel = ({ isOpen, onClose, initialData }) => {
       fullName,
     });
     alert('Settings updated (check console)!');
-    onClose(); // Close the panel after saving
+    onClose();
   };
 
-  if (!isOpen) return null; // Don't render if not open
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
-      {/* Overlay for background dimming and closing */}
       <div
         className="fixed inset-0 bg-gray-900 bg-opacity-50"
-        onClick={onClose} // Close on overlay click
+        onClick={onClose}
       ></div>
 
-      {/* Side Panel */}
       <div
         ref={panelRef}
         className="relative w-full md:w-96 bg-white shadow-xl flex flex-col h-full animate-slide-in-right"
       >
-        {/* Header */}
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-800">Settings</h2>
           <button
@@ -82,7 +74,6 @@ const SettingsPanel = ({ isOpen, onClose, initialData }) => {
           </button>
         </div>
 
-        {/* Form Body */}
         <div className="p-6 flex-grow overflow-y-auto">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
@@ -99,7 +90,7 @@ const SettingsPanel = ({ isOpen, onClose, initialData }) => {
             <div>
               <label htmlFor="mobileNumber" className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
               <input
-                type="tel" // Use tel for phone numbers
+                type="tel"
                 id="mobileNumber"
                 className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-purple-500 focus:border-purple-500"
                 value={mobileNumber}
@@ -132,10 +123,9 @@ const SettingsPanel = ({ isOpen, onClose, initialData }) => {
           </form>
         </div>
 
-        {/* Footer with Save Button */}
         <div className="p-6 border-t border-gray-200">
           <button
-            type="submit" // Associate with form via type="submit"
+            type="submit"
             onClick={handleSubmit}
             className="w-full bg-purple-600 text-white py-3 px-4 rounded-md font-semibold hover:bg-purple-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
           >

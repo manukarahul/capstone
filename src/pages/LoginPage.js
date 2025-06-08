@@ -1,65 +1,32 @@
+// src/pages/LoginPage.js (Formerly Login.js)
 import React, { useState } from 'react';
-import SignUpModal from './SignupModal';
+import SignupModal from '../components/modals/SignupModal'; // Updated path
 import { useNavigate } from 'react-router-dom';
-import { setLocalStorageItem } from './utils/localStorage';
+import { setLocalStorageItem } from '../utils/localStorage'; // Updated path
+import { loginApi } from '../api/auth'; // Updated path
 
-const loginApi = async (email, password) => {
-  try {
-    const response = await fetch('YOUR_BACKEND_LOGIN_ENDPOINT', { // <--- IMPORTANT: Replace with your actual backend endpoint
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-      credentials: 'include', // <--- VERY IMPORTANT: Sends cookies with the request
-    });
-
-    if (!response.ok) {
-      // If the response is not OK (e.g., 400, 401, 500)
-      const errorData = await response.json();
-      return { success: false, message: errorData.message || 'Login failed due to server error.' };
-    }
-
-    // If login is successful, the backend will have set the HttpOnly session cookie.
-    // The frontend doesn't need to read anything from the response body for the session ID.
-    // However, your backend might send user userName or other data in the response body.
-    const data = await response.json();
-    return { success: true, message: 'Login successful!', userName: data.userName || 'User' };
-
-  } catch (error) {
-    console.error('Network or server error during login:', error);
-    return { success: false, message: 'Could not connect to the server. Please try again.' };
-  }
-};
-
-const Login = () => {
+const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSignUpModalOpen, setIsSignUpModalOpen] = useState(false);
-  const [loading, setLoading] = useState(false); // To show loading state during API call
-  const [error, setError] = useState(''); // To display API errors
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const navigate = useNavigate();
 
   const handleLogin = async () => {
-    setError(''); // Clear previous errors
+    setError('');
     setLoading(true);
 
-    const response = {};
-    response.success = true;
-    response.userName = "anchal";
+    const response = await loginApi(email, password); // Call the API function
+
     setLoading(false);
 
     if (response.success) {
       alert(`Login successful! Welcome ${response.userName || 'User'}!`);
       console.log('Login successful!', response);
-      const sessionToken = setLocalStorageItem('userName', response.userName); // set the userName get it from the backend
-      if(sessionToken){
-        alert('login successful');
-        navigate('/home');
-      }
-      
-      // Here you would typically store the user's token/session and redirect
+      setLocalStorageItem('userName', response.userName); // Store the username
+      navigate('/home'); // Redirect to home page
     } else {
       setError(response.message);
       console.error('Login failed:', response.message);
@@ -80,13 +47,10 @@ const Login = () => {
         {/* Left Section: Login Form */}
         <div className="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
           <div className="mb-8">
-            {/* Logo Placeholder */}
-           
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to GoogleRent</h1>
             <p className="text-gray-600">Login to your account or sign up below.</p>
           </div>
 
-          {/* Email Input */}
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
             <input
@@ -99,7 +63,6 @@ const Login = () => {
             />
           </div>
 
-          {/* Password Input */}
           <div className="mb-6">
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
             <input
@@ -116,16 +79,14 @@ const Login = () => {
             <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
           )}
 
-          {/* Single Login Button */}
           <button
             onClick={handleLogin}
             className="w-full bg-purple-600 text-white py-3 rounded-md font-semibold hover:bg-purple-700 transition duration-200 ease-in-out shadow-md"
-            disabled={loading} // Disable button when loading
+            disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
 
-          {/* Sign Up Option */}
           <div className="text-center mt-4">
             <p className="text-gray-600">Don't have an account?</p>
             <button
@@ -135,8 +96,7 @@ const Login = () => {
               Sign Up
             </button>
           </div>
-        
-          {/* Terms & Conditions / Privacy Policy */}
+
           <p className="text-center text-xs text-gray-500 mt-6">
             By logging in or signing up, you agree to our{' '}
             <a href="#" className="text-purple-600 hover:underline">Terms & Conditions</a> and{' '}
@@ -150,12 +110,11 @@ const Login = () => {
             "GoogleRent transformed our property management. Finding reliable tenants has never been easier, and the owner portal is incredibly intuitive."
           </blockquote>
           <div className="flex flex-col items-center">
-            {/* Testimonial Image */}
             <img
-              src="https://placehold.co/80x80/E0BBE4/FFFFFF?text=SC" // Placeholder image
+              src="https://placehold.co/80x80/E0BBE4/FFFFFF?text=SC"
               alt="Sarah Chen"
               className="w-20 h-20 rounded-full object-cover mb-4 border-4 border-white shadow-md"
-              onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/80x80/cccccc/000000?text=User"; }} // Fallback
+              onError={(e) => { e.target.onerror = null; e.target.src="https://placehold.co/80x80/cccccc/000000?text=User"; }}
             />
             <p className="text-lg font-semibold text-purple-700">Sarah Chen</p>
             <p className="text-sm text-gray-600">Property Manager, Elite Properties</p>
@@ -163,10 +122,9 @@ const Login = () => {
         </div>
       </div>
 
-      {/* Sign Up Modal */}
-      <SignUpModal isOpen={isSignUpModalOpen} onClose={closeSignUpModal} />
+      <SignupModal isOpen={isSignUpModalOpen} onClose={closeSignUpModal} />
     </div>
   );
 };
 
-export default Login;
+export default LoginPage;

@@ -1,106 +1,66 @@
+// src/pages/MyPropertiesPage.js (Formerly PropertyCardList.js)
 import React, { useState, useEffect } from 'react';
-import PropertyCard from './PropertyCard';
-import Navbar from './Navbar';
+import PropertyCard from '../components/cards/PropertyCard'; // Updated path
+import { fetchPropertiesApi, updatePropertyApi, deletePropertyApi } from '../api/auth'; // Reusing auth API for now
 
-const PropertyCardList = () => {
+const MyPropertiesPage = () => {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editingProperty, setEditingProperty] = useState(null); // Stores the property currently being edited
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // Controls modal visibility
-  const [userName,setUserName] = useState('');
-  useEffect(()=>{
-    setUserName(localStorage.getItem('useName'))
-  },[])
-  // --- Mock API Call ---
-  const fetchProperties = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const mockData = [
-        {
-          id: 'p1',
-          title: 'Luxurious Apartment in a Prime Area',
-          description: 'Spacious 3BHK with modern amenities, stunning city views, and access to a rooftop pool. Located in the heart of Bengaluru, close to tech parks and shopping centers. Ideal for urban living.',
-          price: 15000000,
-          location: 'Koramangala, Bengaluru',
-          imageUrl: "https://housing-images.n7net.in/01c16c28/b002a90efbba4b1fb638af9989529eb9/v0/large/1_bhk_independent_house-for-rent-mahadevapura-Bangalore-bedroom.jpg",
-        },
-        {
-          id: 'p2',
-          title: 'Cozy Family Home with Garden',
-          description: 'A charming 2-story house featuring a lush private garden, perfect for outdoor activities and relaxation. Located in a quiet, family-friendly neighborhood with excellent schools nearby.',
-          price: 9500000,
-          location: 'Whitefield, Bengaluru',
-          imageUrl: 'https://via.placeholder.com/400x250/28a745/FFFFFF?text=Property+2'
-        },
-        {
-          id: 'p3',
-          title: 'Modern Commercial Office Space',
-          description: 'Prime location for your thriving business. This office space offers ample parking, high-speed internet, and a contemporary design suitable for various industries. Excellent connectivity.',
-          price: 22000000,
-          location: 'Indiranagar, Bengaluru',
-          imageUrl: 'https://via.placeholder.com/400x250/ffc107/333333?text=Property+3'
-        },
-        {
-          id: 'p4',
-          title: 'Compact Studio Apartment',
-          description: 'An affordable and efficient studio apartment, ideal for bachelors, students, or young professionals. Features a kitchenette and a compact living area. Close to public transport.',
-          price: 4500000,
-          location: 'Electronic City, Bengaluru',
-          imageUrl: 'https://via.placeholder.com/400x250/6c757d/FFFFFF?text=Property+4'
-        },
-        {
-          id: 'p5',
-          title: 'Sprawling Farmhouse Retreat',
-          description: 'Escape the city to this spacious farmhouse with vast open land, ideal for weekend getaways or permanent rural living. Features multiple bedrooms and a serene environment.',
-          price: 30000000,
-          location: 'Devanahalli, Bengaluru',
-          imageUrl: 'https://via.placeholder.com/400x250/800080/FFFFFF?text=Property+5'
-        }
-      ];
-
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setProperties(mockData);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [editingProperty, setEditingProperty] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [userName, setUserName] = useState(''); // Will be populated from localStorage in a real app
 
   useEffect(() => {
-    fetchProperties();
+    // In a real app, you'd likely get the userName from context or direct localStorage check
+    // For now, it's just a placeholder as it's not used in this specific component's logic.
+    setUserName(localStorage.getItem('userName') || '');
   }, []);
 
-  // --- Handlers for Edit and Delete ---
+  useEffect(() => {
+    const getProperties = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const data = await fetchPropertiesApi(); // Call the API function
+        setProperties(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getProperties();
+  }, []);
 
   const handleEdit = (propertyToEdit) => {
-    setEditingProperty({ ...propertyToEdit }); // Create a copy to edit
+    setEditingProperty({ ...propertyToEdit });
     setIsEditModalOpen(true);
   };
 
   const handleSaveEdit = async (e) => {
-    e.preventDefault(); // Prevent default form submission
+    e.preventDefault();
     if (!editingProperty) return;
 
-    // In a real app, you would make an API call here:
-    // const response = await fetch(`/api/properties/${editingProperty.id}`, {
-    //   method: 'PUT', // or PATCH
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(editingProperty),
-    // });
-    // if (!response.ok) { /* handle error */ }
-
-    console.log("Simulating save for property:", editingProperty);
-
-    // Update the local state with the edited property
-    setProperties(prevProperties =>
-      prevProperties.map(p => (p.id === editingProperty.id ? editingProperty : p))
-    );
-    setIsEditModalOpen(false);
-    setEditingProperty(null);
-    alert(`Property "${editingProperty.title}" updated successfully!`);
+    setLoading(true);
+    try {
+      const response = await updatePropertyApi(editingProperty); // Call the API function
+      if (response.success) {
+        setProperties(prevProperties =>
+          prevProperties.map(p => (p.id === editingProperty.id ? editingProperty : p))
+        );
+        alert(response.message);
+      } else {
+        setError(response.message);
+      }
+    } catch (err) {
+      setError("Failed to save changes. Please try again.");
+      console.error("Error saving property:", err);
+    } finally {
+      setLoading(false);
+      setIsEditModalOpen(false);
+      setEditingProperty(null);
+    }
   };
 
   const handleCancelEdit = () => {
@@ -110,23 +70,23 @@ const PropertyCardList = () => {
 
   const handleDelete = async (propertyId) => {
     if (window.confirm(`Are you sure you want to delete property ID: ${propertyId}?`)) {
+      setLoading(true);
       try {
-        // API call to delete
-        // const response = await fetch(`/api/properties/${propertyId}`, { method: 'DELETE' });
-        // if (!response.ok) { /* handle error */ }
-
-        console.log(`Successfully deleted property with ID: ${propertyId} (mock)`);
-        setProperties(prevProperties => prevProperties.filter(p => p.id !== propertyId));
-        alert(`Property ${propertyId} deleted successfully!`);
-
+        const response = await deletePropertyApi(propertyId); // Call the API function
+        if (response.success) {
+          setProperties(prevProperties => prevProperties.filter(p => p.id !== propertyId));
+          alert(response.message);
+        } else {
+          setError(response.message);
+        }
       } catch (err) {
-        console.error("Error deleting property:", err);
         setError("Failed to delete property. Please try again.");
+        console.error("Error deleting property:", err);
+      } finally {
+        setLoading(false);
       }
     }
   };
-
-  // --- Render Logic ---
 
   if (loading) {
     return (
@@ -143,11 +103,9 @@ const PropertyCardList = () => {
       </div>
     );
   }
-  return (
-    // <div className="p-4  mx-auto text-center bg-gray-50 min-h-screen">
-    <div className="min-h-screen bg-gray-100 font-sans">
 
-      <Navbar/>
+  return (
+    <div className="min-h-screen bg-gray-100 font-sans">
       <h2 className="text-4xl font-extrabold mb-8 text-gray-900 mt-10">Available Properties</h2>
       <div className="flex flex-wrap justify-center gap-6">
         {properties.map(property => (
@@ -160,12 +118,8 @@ const PropertyCardList = () => {
         ))}
       </div>
 
-      {/* Edit Property Modal/Form */}
       {isEditModalOpen && editingProperty && (
-        <div className="
-          fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center p-4
-          z-50
-        ">
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg relative">
             <h3 className="text-2xl font-bold mb-6 text-gray-800">Edit Property: {editingProperty.title}</h3>
             <form onSubmit={handleSaveEdit} className="space-y-4">
@@ -252,4 +206,4 @@ const PropertyCardList = () => {
   );
 };
 
-export default PropertyCardList;
+export default MyPropertiesPage;

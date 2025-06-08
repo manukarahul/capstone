@@ -1,56 +1,8 @@
+// src/components/modals/SignupModal.js
 import React, { useState, useEffect } from 'react';
+import { sendOtpApi, verifyOtpApi, createAccountApi } from '../../api/auth'; // Updated path
 
-const sendOtpApi = async (fullName, email) => {
-  try {
-    const response = await fetch('YOUR_BACKEND_SEND_OTP_ENDPOINT', { // <--- IMPORTANT: Replace
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ fullName, email }),
-      credentials: 'include', // Needed if your backend also uses cookies for CSRF tokens or other reasons
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      return { success: false, message: errorData.message || 'Failed to send OTP.' };
-    }
-    return { success: true, message: 'OTP sent successfully to your email!' };
-  } catch (error) {
-    console.error('Network or server error during send OTP:', error);
-    return { success: false, message: 'Could not connect to the server. Please try again.' };
-  }
-};
-
-// Mock API function for verifying OTP
-const verifyOtpApi = async (email, otp) => { // This just verifies OTP, doesn't create account yet
-  console.log('Calling Verify OTP API with:', { email, otp });
-  return new Promise(resolve => {
-    setTimeout(() => {
-      if (otp === '123456') { // Simulate successful verification for OTP '123456'
-        resolve({ success: true, message: 'OTP verified successfully!' });
-      } else {
-        resolve({ success: false, message: 'Invalid OTP. Please try again.' });
-      }
-    }, 1500);
-  });
-};
-
-// Mock API function for creating the account (after OTP is verified)
-const createAccountApi = async (fullName, email, password) => {
-  console.log('Calling Create Account API with:', { fullName, email, password });
-  return new Promise(resolve => {
-    setTimeout(() => {
-      // In a real app, you'd send this to your backend to register the user
-      if (password.length >= 6) { // Basic password length check
-        resolve({ success: true, message: 'Account created successfully!' });
-      } else {
-        resolve({ success: false, message: 'Account creation failed. Password too short.' });
-      }
-    }, 1500);
-  });
-};
-
-
-const SignUpModal = ({ isOpen, onClose }) => {
+const SignupModal = ({ isOpen, onClose }) => {
   // Step 1 states
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -59,14 +11,14 @@ const SignUpModal = ({ isOpen, onClose }) => {
   const [otp, setOtp] = useState('');
 
   // Step 3 states
-  const [password, setPassword] = useState(''); // Reintroduced for Step 3
-  const [confirmPassword, setConfirmPassword] = useState(''); // Reintroduced for Step 3
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   // UI/Flow control states
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [otpSent, setOtpSent] = useState(false); // True after OTP is successfully sent
-  const [otpVerified, setOtpVerified] = useState(false); // New: True after OTP is successfully verified
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
 
   // Effect to reset form when modal opens/closes
   useEffect(() => {
@@ -74,16 +26,14 @@ const SignUpModal = ({ isOpen, onClose }) => {
       setFullName('');
       setEmail('');
       setOtp('');
-      setPassword(''); // Reset
-      setConfirmPassword(''); // Reset
+      setPassword('');
+      setConfirmPassword('');
       setLoading(false);
       setError('');
       setOtpSent(false);
-      setOtpVerified(false); // Reset
+      setOtpVerified(false);
     }
   }, [isOpen]);
-
-  // --- Handlers for each step ---
 
   // Handler for Step 1: Send OTP
   const handleSendOtp = async (e) => {
@@ -102,7 +52,7 @@ const SignUpModal = ({ isOpen, onClose }) => {
       return;
     }
 
-    const response = await sendOtpApi(fullName, email); // Only pass name and email
+    const response = await sendOtpApi(fullName, email);
     setLoading(false);
 
     if (response.success) {
@@ -128,12 +78,12 @@ const SignUpModal = ({ isOpen, onClose }) => {
       return;
     }
 
-    const response = await verifyOtpApi(email, otp); // Verify OTP for the given email
+    const response = await verifyOtpApi(email, otp);
     setLoading(false);
 
     if (response.success) {
       alert(response.message);
-      setOtpVerified(true); // Move to Step 3
+      setOtpVerified(true);
       setError('');
       console.log('OTP verification successful:', response.message);
     } else {
@@ -148,7 +98,6 @@ const SignUpModal = ({ isOpen, onClose }) => {
     setError('');
     setLoading(true);
 
-    // Frontend validation for password
     if (!password || !confirmPassword) {
       setError('Please enter and confirm your password.');
       setLoading(false);
@@ -165,14 +114,13 @@ const SignUpModal = ({ isOpen, onClose }) => {
       return;
     }
 
-    const response = await createAccountApi(fullName, email, password); // Pass all data
+    const response = await createAccountApi(fullName, email, password);
     setLoading(false);
 
     if (response.success) {
       alert(response.message);
       console.log('Account creation successful:', response.message);
-      onClose(); // Close modal on successful account creation
-      // You might want to automatically log the user in or redirect them here
+      onClose();
     } else {
       setError(response.message || 'Account creation failed. Please try again.');
       console.error('Account creation failed:', response.message);
@@ -192,13 +140,10 @@ const SignUpModal = ({ isOpen, onClose }) => {
           &times;
         </button>
 
-        {/* Global Error Message */}
         {error && (
           <p className="text-red-500 text-sm mb-4 text-center">{error}</p>
         )}
 
-        {/* Conditional Rendering for each step */}
-        {/* Step 1: Enter Name and Email, Send OTP */}
         {!otpSent && !otpVerified && (
           <form onSubmit={handleSendOtp}>
             <div className="mb-4">
@@ -237,7 +182,6 @@ const SignUpModal = ({ isOpen, onClose }) => {
           </form>
         )}
 
-        {/* Step 2: Enter OTP and Verify */}
         {otpSent && !otpVerified && (
           <form onSubmit={handleVerifyOtp}>
             <p className="text-gray-600 text-center mb-4">
@@ -266,9 +210,9 @@ const SignUpModal = ({ isOpen, onClose }) => {
             <button
               type="button"
               onClick={() => {
-                setOtpSent(false); // Go back to Step 1
+                setOtpSent(false);
                 setOtp('');
-                setError(''); // Clear error
+                setError('');
               }}
               className="w-full mt-3 text-sm text-gray-600 hover:text-purple-600 hover:underline transition duration-200 ease-in-out"
               disabled={loading}
@@ -278,7 +222,6 @@ const SignUpModal = ({ isOpen, onClose }) => {
           </form>
         )}
 
-        {/* Step 3: Enter Password and Create Account */}
         {otpSent && otpVerified && (
           <form onSubmit={handleCreateAccount}>
             <p className="text-gray-600 text-center mb-4">
@@ -324,4 +267,4 @@ const SignUpModal = ({ isOpen, onClose }) => {
   );
 };
 
-export default SignUpModal;
+export default SignupModal;

@@ -1,14 +1,25 @@
-// src/components/RoomCard.jsx
+// src/components/cards/RoomCard.js
 import React from 'react';
-import { useNavigate} from 'react-router-dom';
-const RoomCard = ({ setShowHome,setPropertyData,imageUrl, title, location, price, bedrooms, bathrooms, area }) => {
+import { useNavigate } from 'react-router-dom';
+
+// Destructure the entire 'room' object instead of individual properties
+const RoomCard = ({ setShowHome, setPropertyData, room }) => {
+  const { imageUrl, title, location, price, bedrooms, bathrooms, area } = room;
+
   // Uses the imageUrl prop directly. If it's undefined/null, it defaults to the first fallback.
   const finalImageUrl = imageUrl || "https://dummyimage.com/600x400/DCCFEF/7C3AED&text=Room+Image+Default";
   const navigate = useNavigate();
+
   const handleClick = () => {
-      setShowHome(false);
-      setPropertyData(imageUrl, title, location, price, bedrooms, bathrooms, area );
+    // Pass the entire 'room' object to setPropertyData
+    setPropertyData(room);
+    // Since this is used within DashboardPage and you're controlling rendering with setShowHome,
+    // you likely don't need navigate('/itemdetails') here if setShowHome handles the view change.
+    // If you plan to use react-router for navigation, you'd remove setShowHome/setPropertyData props
+    // and navigate directly like: navigate('/itemdetails', { state: { property: room } });
+    setShowHome(false);
   };
+
   return (
     <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
       {/* Room Photo */}
