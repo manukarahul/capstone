@@ -12,7 +12,7 @@ const Navbar = () => {
   const [userName, setUserName] = useState(''); // State to hold user name if needed from local storage
 
   const [currentUserData, setCurrentUserData] = useState({
-    fullName: 'John Doe',
+    fullName: 'Rahul Manuka',
     mobileNumber: '+91 9876543210',
     email: 'john.doe@example.com',
     address: '123 Main Street, Koramangala, Bengaluru, Karnataka, India',
@@ -47,7 +47,7 @@ const Navbar = () => {
   return (
     <nav className="bg-white p-4 shadow-md flex justify-between items-center relative z-10">
       <div className="flex items-center">
-        <Link to="/home" className="text-2xl font-bold text-purple-600">Google Rent</Link>
+        <Link to="/home" className="text-2xl font-bold text-purple-600">RentIt</Link>
       </div>
 
       <div className="flex items-center space-x-6">

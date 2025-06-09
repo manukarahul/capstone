@@ -1,18 +1,12 @@
 import React from 'react';
 import { createBrowserRouter, redirect, RouterProvider } from 'react-router-dom';
 import './App.css';
-
-// Pages
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import HomeListingDetailPage from './pages/HomeListingDetailPage';
 import MyPropertiesPage from './pages/MyPropertiesPage';
 import ServicesPage from './pages/ServicesPage';
-
-// Common Components
 import ProtectedRoute from './components/common/ProtectedRoute';
-
-// Utilities
 import { getLocalStorageItem } from './utils/localStorage';
 
 function App() {

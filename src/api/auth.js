@@ -10,22 +10,13 @@
 export const loginApi = async (email, password) => {
     try {
       // IMPORTANT: Replace 'YOUR_BACKEND_LOGIN_ENDPOINT' with your actual backend endpoint
-      const response = await fetch('YOUR_BACKEND_LOGIN_ENDPOINT', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include', // VERY IMPORTANT: Sends cookies with the request for session management
-      });
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        return { success: false, message: errorData.message || 'Login failed due to server error.' };
-      }
-  
-      const data = await response.json();
-      return { success: true, message: 'Login successful!', userName: data.userName || 'User' };
+      
+      const data = {userName:email}
+      if(email === 'anchal' && password === "1234")
+        {
+            
+            return { success: true, message: 'Login successful!', userName: data.userName || 'User' };
+        }
   
     } catch (error) {
       console.error('Network or server error during login:', error);

@@ -47,7 +47,7 @@ const LoginPage = () => {
         {/* Left Section: Login Form */}
         <div className="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to GoogleRent</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-2">Welcome to RentIt</h1>
             <p className="text-gray-600">Login to your account or sign up below.</p>
           </div>
 
@@ -107,7 +107,7 @@ const LoginPage = () => {
         {/* Right Section: Testimonial */}
         <div className="w-full lg:w-1/2 bg-gradient-to-br from-purple-50 to-pink-50 p-8 md:p-12 flex flex-col items-center justify-center text-center relative rounded-r-xl">
           <blockquote className="text-2xl italic text-gray-800 mb-8 max-w-md">
-            "GoogleRent transformed our property management. Finding reliable tenants has never been easier, and the owner portal is incredibly intuitive."
+            "RentIt transformed our property management. Finding reliable tenants has never been easier, and the owner portal is incredibly intuitive."
           </blockquote>
           <div className="flex flex-col items-center">
             <img
